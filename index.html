@@ -70,6 +70,8 @@
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
   <script src='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <!-- <script src="https://npmcdn.com/@turf/turf@3.10.3/turf.min.js"></script> -->
 
 
   <script>
@@ -80,6 +82,9 @@
   var tsID = "sfarley2.cizf07wvl005v33nnlpi8f00s-1mqbd"
   var width = 500;
   var map;
+  var icesheets_src;
+  var icesheets_height;
+
   var slicesWithData = [
     0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000,
     6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000, 10500, 11000, 11500, 12000,
@@ -134,9 +139,20 @@
     closestSlice = slicesWithData.closest(value)
     if (map.loaded()){
       map.setFilter('icesheets', ['==', 'Age', closestSlice])
-      // map.setFilter('icesheets-src', ['==', 'Age', closestSlice])
-      // src = map.getSource('icesheets-src')
-      // console.log(src)
+      g = Object.assign({}, icesheets_src)
+      filteredFeatures = getFilteredFeatures(g.features, 'Age', closestSlice)
+      g.features = filteredFeatures
+      a = turf.area(g) //area in square meters
+      //get integral height of ice
+      console.log(a)
+
+      ih = _.where(icesheets_height, {"Years":closestSlice})[0].Sum
+
+      console.log(ih)
+
+      volume =  a * ih
+
+      console.log(volume)
 
     }else{
       //pass
@@ -153,19 +169,21 @@
       style: styleURI,
       renderWorldCopies: false
     })
+    $.getJSON("data/landice-5g/icesheets_22k.geojson", function(data){
+      icesheets_src = data;
+    })
+    d3.csv("data/landice-5g/thicknessTable.csv", function(err,data){
+      if(err) throw err;
 
-    map.on('load', function(){
-      // map.addLayer({
-      //     'id': 'icesheets-src',
-      //     'source': "composite",
-      //     'source-layer': 'icesheets',
-      //     'type': 'fill',
-      //     'paint': {
-      //         'fill-color': 'red'
-      //     }
-      // }); //end add layer
-    })//end on load
+      data.forEach(function(d){
+        d.Years = +d.Years;
+        d.Sum = +d.Sum;
+      })
 
+      icesheets_height = data
+      console.log(data)
+
+    })
 
   })//end ready
 
@@ -181,6 +199,11 @@ Array.prototype.closest =  function  (num) {
       }
   }
   return curr;
+} //end closest function
+
+function getFilteredFeatures(geojsonFeatures, key, value){
+  newFeatures = _.filter(geojsonFeatures, function(d){return d.properties[key] == value})
+  return newFeatures
 }
 
   </script>
