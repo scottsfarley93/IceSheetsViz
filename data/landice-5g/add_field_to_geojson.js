@@ -19,6 +19,26 @@ function addField(filename, fieldName, fieldValue){
 
         //set key and value
         thisProps[fieldName] = fieldValue
+
+        //ensure geojson is legit
+        geom = thisFeature.geometry
+        coordinates = geom.coordinates[0]
+        for (var p=0; p < coordinates.length; p++){
+          q = coordinates[p]
+          console.log(q)
+          if (q[0] > 180){
+            thisFeature.geometry.coordinates[0][p][0] = 180
+          }
+          if (q[0] < -180){
+            thisFeature.geometry.coordinates[0][p][0] = -180
+          }
+          if (q[1] > 90){
+            thisFeature.geometry.coordinates[0][p][1] = 90
+          }
+          if (q[1] < -90){
+            thisFeature.geometry.coordinates[0][p][1] = -90
+          }
+        }
       } //end loop
 
       //once finished, write the modified file
