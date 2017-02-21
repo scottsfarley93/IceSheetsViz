@@ -3,7 +3,7 @@
   <title>Title</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
   <style>
 
   html, body{
@@ -28,69 +28,12 @@
 
     </div>
   <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
-  <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
-  <script src="https://rawgit.com/calvinmetcalf/leaflet-ajax/master/dist/leaflet.ajax.min.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
 
   <script>
-
-  globals = {}
-  globals.tileURL ='http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
-  globals.tileAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-
-  globals.iceStyle = {
-      "color": "#ff7800",
-      "weight": 1,
-      "opacity": 0.65
-  };
-
-  globals.noStyle = {
-    "color" : "none",
-    "weight" : "none",
-    "opacity": 0
-  }
-
-  $(document).ready(function(){
-    initialize()
-  })
-
-  function initialize(){
-    createMap()
-    loadData()
-  }
-
-  function loadData(callback){
-    globals.geojsonLayer = new L.GeoJSON.AJAX("data/unprojected.icesheets.geo.json", {
-      style: globals.iceStyle
-    });
-    globals.geojsonLayer.addTo(globals.map);
-  }
-
-  function createMap(){
-    globals.map =  L.map('map').setView(L.latLng(70, 10), 3);
-    var tiles = L.tileLayer(globals.tileURL, {
-    	attribution: globals.tileAttribution,
-    	subdomains: 'abcd',
-    	maxZoom: 19
-    });
-    tiles.addTo(globals.map)
-  }
-
-  function changeTimeSlice(yearBP){
-    globals.geojsonLayer.eachLayer(function(layer, feature){
-      props = layer.feature.properties
-      console.log(props)
-      if (props.AV_Time == yearBP){
-        layer.setStyle(globals.iceStyle)
-      }else{
-        layer.setStyle(globals.noStyle)
-      }
-    })
-
-  }
-
 
   </script>
 </body>

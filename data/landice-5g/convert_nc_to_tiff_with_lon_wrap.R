@@ -4,8 +4,6 @@
 library(ncdf4)
 library(raster)
 
-print(getwd())
-
 ## get the arguments passed via commandline
 args = commandArgs(trailingOnly = TRUE)
 print(args)
