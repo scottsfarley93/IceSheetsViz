@@ -5,7 +5,6 @@
 
 ## Author: Scott Farley
 
-##Yes, I used four languages to do this task...
 
 # setup directory
 mkdir rasters
@@ -30,4 +29,7 @@ node add_field_to_geojson.js
 
 ## get rid of intermediate directories
 rm -r rasters
-rm -r shapefiles 
+rm -r shapefiles
+
+## build a statistics table of the height
+python build_volume_attribute_table.py
