@@ -18,6 +18,43 @@
     width: 100%;
     max-height: 100%;
   }
+
+  .slider {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  z-index: 100000000;
+  height: 25px;
+  background-color: none;
+}
+
+.slider-tray {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  border: solid 1px #ccc;
+  border-top-color: #aaa;
+  border-radius: 4px;
+  background-color: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.slider-handle {
+  position: absolute;
+  top: 3px;
+}
+
+.slider-handle-icon {
+  width: 14px;
+  height: 14px;
+  border: solid 1px #aaa;
+  position: absolute;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  top: -7px;
+  left: -7px;
+}
   </style>
 </head>
 
@@ -27,13 +64,124 @@
     <div id='map'>
 
     </div>
+    <div class="slider"></div>
   <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
   <script src='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
 
+
   <script>
+
+  var token = "pk.eyJ1Ijoic2ZhcmxleTIiLCJhIjoiY2lmeWVydWtkNTJpb3RmbTFkdjQ4anhrMSJ9.jRJCOGU1AOHfNXHH7cwU7Q"
+  var styleURI = "mapbox://styles/sfarley2/cizfl8rn300cy2sqivmmwo3w6"
+  var dsID = "cizf07wvl005v33nnlpi8f00s"
+  var tsID = "sfarley2.cizf07wvl005v33nnlpi8f00s-1mqbd"
+  var width = 500;
+  var map;
+  var slicesWithData = [
+    0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000,
+    6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000, 10500, 11000, 11500, 12000,
+    12500, 13000, 13500, 14000, 14500, 15000, 15500, 16000, 16500, 17000, 18000,
+    19000, 20000, 21000
+  ]
+
+
+
+  function makeSlider(){
+    var x = d3.scaleLinear()
+        .domain([1, 22000])
+        .range([0, width])
+        .clamp(true);
+
+    var dispatch = d3.dispatch("sliderChange");
+
+    var slider = d3.select(".slider")
+        .style("width", width + "px");
+
+    var sliderTray = slider.append("div")
+        .attr("class", "slider-tray");
+
+    var sliderHandle = slider.append("div")
+        .attr("class", "slider-handle");
+
+    sliderHandle.append("div")
+        .attr("class", "slider-handle-icon")
+
+    slider.call(d3.drag()
+        .on("start", function() {
+          mousePos = d3.mouse(sliderTray.node())
+          xval = x.invert(mousePos[0])
+          // dispatch.call('sliderChange', xval);
+          d3.event.sourceEvent.preventDefault();
+        })
+        .on("drag", function() {
+          var mousePos = d3.mouse(sliderTray.node())
+          var xval = x.invert(mousePos[0])
+          dispatch.call('sliderChange', {}, xval);
+        }));
+
+    dispatch.on("sliderChange", function() {
+      value = arguments[0]
+      sliderHandle.style("left", x(value) + "px")
+      changeTimeSlice(value)
+    });
+    return slider
+  }
+
+  function changeTimeSlice(value){
+    closestSlice = slicesWithData.closest(value)
+    if (map.loaded()){
+      map.setFilter('icesheets', ['==', 'Age', closestSlice])
+      // map.setFilter('icesheets-src', ['==', 'Age', closestSlice])
+      // src = map.getSource('icesheets-src')
+      // console.log(src)
+
+    }else{
+      //pass
+    }
+  }
+
+
+  $(document).ready(function(){
+
+    slider = makeSlider();
+    mapboxgl.accessToken = token
+     map = new mapboxgl.Map({
+      container: 'map',
+      style: styleURI,
+      renderWorldCopies: false
+    })
+
+    map.on('load', function(){
+      // map.addLayer({
+      //     'id': 'icesheets-src',
+      //     'source': "composite",
+      //     'source-layer': 'icesheets',
+      //     'type': 'fill',
+      //     'paint': {
+      //         'fill-color': 'red'
+      //     }
+      // }); //end add layer
+    })//end on load
+
+
+  })//end ready
+
+Array.prototype.closest =  function  (num) {
+  arr = this
+  var curr = arr[0];
+  var diff = Math.abs (num - curr);
+  for (var val = 0; val < arr.length; val++) {
+      var newdiff = Math.abs (num - arr[val]);
+      if (newdiff < diff) {
+          diff = newdiff;
+          curr = arr[val];
+      }
+  }
+  return curr;
+}
 
   </script>
 </body>
