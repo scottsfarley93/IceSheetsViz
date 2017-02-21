@@ -24,8 +24,7 @@ function addField(filename, fieldName, fieldValue){
         geom = thisFeature.geometry
         coordinates = geom.coordinates[0]
         for (var p=0; p < coordinates.length; p++){
-          q = coordinates[p]
-          console.log(q)
+          q = coordinates[p] 
           if (q[0] > 180){
             thisFeature.geometry.coordinates[0][p][0] = 180
           }

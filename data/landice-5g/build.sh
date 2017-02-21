@@ -27,3 +27,7 @@ python shp_to_geojson.py
 node add_field_to_geojson.js
 
 ## At this point, the geojson should be ready to load into mapbox
+
+## get rid of intermediate directories
+rm -r rasters
+rm -r shapefiles 
