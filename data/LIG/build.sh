@@ -1,6 +1,7 @@
 ## setup
 mkdir raster
 mkdir geojson
+mkdir geojson/simple
 
 ## This R script
 ## 1. rotates the grid
@@ -12,3 +13,6 @@ RScript --vanilla process_thickness_data.R netcdf/ICE-6G_C_IceThickness_1deg.nc 
 
 ## add the age field to the geojson
 node add_field_to_geojson.js geojson
+
+##simplify the polygons
+python simplify.py
